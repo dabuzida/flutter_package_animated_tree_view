@@ -32,7 +32,8 @@ class MyWidget extends StatefulWidget {
 
 class MyWidgetState extends State<MyWidget> {
   TreeViewController? _treeViewController; // 트리 전체 열기, 전체 닫기 같은 이벤트에 사용
-  String? _selectedNode;
+  // String? _selectedNode;
+  TreeNode? _selectedNode;
 
   final TreeNode _treeSimple = TreeNode.root()
     ..addAll(
@@ -176,6 +177,108 @@ class MyWidgetState extends State<MyWidget> {
               _buildUITestButton(),
             ],
           ),
+          const VerticalDivider(),
+          Column(
+            children: <Widget>[
+              _buildUIButton(
+                title: '상위 노드 추가',
+                onPressed: () {
+                  // 중복 키가 존재하면 불가
+                  _treeSimple.add(TreeNode(key: _makeString(5)));
+
+                  setState(() {});
+
+                  // _treeSimple.addedNodes;
+                  // _treeSimple.clear;
+                  // _treeSimple.add(TreeNode(key: _makeString(3)));
+                  // _treeSimple.children.entries;
+                  // _treeSimple.children.entries.first;
+                  // print('key: ${_treeSimple.children.entries.first.key}');
+                  // print('value: ${_treeSimple.children.entries.first.value}');
+                  // print('key: ${_treeSimple.children.entries.first.key}, value: ${_treeSimple.children.entries.first.value}');
+
+                  // print(_treeSimple.children.length);
+                  // for (MapEntry<String, Node> element in _treeSimple.children.entries) {
+                  //   print('key: ${element.key}, value: ${element.value}');
+                  // }
+
+                  // addAll(
+                  //   <Node>[
+                  //     TreeNode(key: _makeString(4))
+                  //       ..addAll(
+                  //         <Node>[
+                  //           TreeNode(key: _makeString(5)),
+                  //           TreeNode(key: _makeString(6)),
+                  //         ],
+                  //       ),
+                  //   ],
+                  // );
+
+                  //
+                },
+              ),
+              _buildUIButton(
+                title: '하위 노드 추가',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level > 1) {
+                    print('상위 노드를 선택하세요');
+                    return;
+                  }
+
+                  // 중복 키가 존재하면 불가
+                  _selectedNode!.add(TreeNode(key: _makeString(8)));
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: '상위 노드 삭제',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level > 1) {
+                    print('상위 노드를 선택하세요');
+                    return;
+                  }
+
+                  // 로직. 하위 노드도 같이 모두 삭제
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: '하위 노드 삭제',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level < 2) {
+                    print('하위 노드를 선택하세요');
+                    return;
+                  }
+
+                  _treeSimple;
+                  _selectedNode;
+
+                  print(_selectedNode!.path);
+                  print(_selectedNode!.parent?.key);
+                  print(_selectedNode!.key);
+                  // final TreeNode tre3eSimple = TreeNode.root();
+                  // Node ww = Node();
+                  _treeSimple.remove(Node(key: '4'));
+
+                  // for (ListenableNode element in _treeSimple.childrenAsList) {
+                  //   print(element.key); // 상위 노드 키
+                  // }
+
+                  //
+                  setState(() {});
+                },
+              ),
+              Container(
+                width: 400,
+                height: 300,
+                decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+                child: _buildUINodeInfo(),
+              ),
+            ],
+          ),
+
           // const VerticalDivider(),
           // Column(
           //   children: <Widget>[
@@ -212,7 +315,68 @@ class MyWidgetState extends State<MyWidget> {
           //     ),
           //   ],
           // ),
+
+          //
         ],
+      ),
+    );
+  }
+
+  Widget _buildUINodeInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          child: const Text(
+            '선택한 키 정보',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.green,
+            ),
+          ),
+        ),
+        _buildUIItem(title: 'PATH', desc: _selectedNode?.path),
+        _buildUIItem(title: 'parent key', desc: _selectedNode?.parent?.key),
+        _buildUIItem(title: '키', desc: _selectedNode?.key),
+      ],
+    );
+  }
+
+  Widget _buildUIItem({required String title, required String? desc}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(title),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 2,
+            child: Text(desc.toString()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUIButton({required String title, required void Function() onPressed}) {
+    return Container(
+      width: 200,
+      height: 50,
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: ElevatedButton(
+        child: Text(title),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          shape: const RoundedRectangleBorder(
+              // borderRadius: BorderRadius.circular(12),
+
+              ),
+        ),
+        onPressed: onPressed,
       ),
     );
   }
@@ -282,7 +446,7 @@ class MyWidgetState extends State<MyWidget> {
 
         return Container(
           width: 180,
-          height: 60,
+          height: 30,
           margin: const EdgeInsets.only(
             left: 25,
             // top: 10,
@@ -290,13 +454,13 @@ class MyWidgetState extends State<MyWidget> {
             // right: 10,
           ),
           decoration: BoxDecoration(
-            color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
+            color: _selectedNode != null && _selectedNode!.key == node.key ? Colors.blue : Colors.grey.shade100,
             border: Border.all(color: Colors.red),
           ),
           child: GestureDetector(
             onTap: () {
               print('>> node key: ${node.key}, node hierarchy: ${node.level}');
-              _selectedNode = node.key;
+              _selectedNode = node;
               setState(() {});
             },
             child: MouseRegion(
@@ -312,186 +476,179 @@ class MyWidgetState extends State<MyWidget> {
     );
   }
 
-  Widget _buildUITreeViewSimpleTyped() {
-    return TreeView.simpleTyped(
-      tree: _treeSimpleTyped,
-      showRootNode: false,
-      expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
-        // ExpansionIndicator
-        return ChevronIndicator.rightDown(
-          tree: node,
-          color: Colors.blue,
-          alignment: Alignment.centerLeft,
-        );
-      },
-      indentation: const Indentation(style: IndentStyle.squareJoint),
-      onItemTap: (TreeNode node) {
-        if (node.level > 1) {
-          return;
-        }
+  // Widget _buildUITreeViewSimpleTyped() {
+  //   return TreeView.simpleTyped(
+  //     tree: _treeSimpleTyped,
+  //     showRootNode: false,
+  //     expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
+  //       // ExpansionIndicator
+  //       return ChevronIndicator.rightDown(
+  //         tree: node,
+  //         color: Colors.blue,
+  //         alignment: Alignment.centerLeft,
+  //       );
+  //     },
+  //     indentation: const Indentation(style: IndentStyle.squareJoint),
+  //     onItemTap: (TreeNode node) {
+  //       if (node.level > 1) {
+  //         return;
+  //       }
 
-        print('>> expansion indicator clicked ${_makeString(1)}');
-      },
-      onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
-        _treeViewController = controller;
-        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimpleTyped);
-      },
-      builder: (BuildContext context, TreeNode node) {
-        return Container(
-          width: 180,
-          height: 60,
-          margin: const EdgeInsets.only(left: 25),
-          decoration: BoxDecoration(
-            color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
-            border: Border.all(color: Colors.red),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              print('>> node key: ${node.key}, node hierarchy: ${node.level}');
-              _selectedNode = node.key;
-              setState(() {});
-            },
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(node.key),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //       print('>> expansion indicator clicked ${_makeString(1)}');
+  //     },
+  //     onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
+  //       _treeViewController = controller;
+  //       if (expandChildrenOnReady) controller.expandAllChildren(_treeSimpleTyped);
+  //     },
+  //     builder: (BuildContext context, TreeNode node) {
+  //       return Container(
+  //         width: 180,
+  //         height: 60,
+  //         margin: const EdgeInsets.only(left: 25),
+  //         decoration: BoxDecoration(
+  //           color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
+  //           border: Border.all(color: Colors.red),
+  //         ),
+  //         child: GestureDetector(
+  //           onTap: () {
+  //             print('>> node key: ${node.key}, node hierarchy: ${node.level}');
+  //             _selectedNode = node.key;
+  //             setState(() {});
+  //           },
+  //           child: MouseRegion(
+  //             cursor: SystemMouseCursors.click,
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               child: Text(node.key),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
-  Widget _buildUITreeViewIndexed() {
-    // return TreeView.indexed(builder: builder, tree: IndexedTreeNode());
+  // Widget _buildUITreeViewIndexed() {
+  //   // return TreeView.indexed(builder: builder, tree: IndexedTreeNode());
 
-    return TreeView.indexed(
-      tree: _treeIndexed,
-      showRootNode: false,
-      expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
-        return ChevronIndicator.rightDown(
-          tree: node,
-          color: Colors.blue,
-          alignment: Alignment.centerLeft,
-        );
-      },
-      indentation: const Indentation(style: IndentStyle.squareJoint),
-      onItemTap: (IndexedTreeNode node) {
-        if (node.level > 1) {
-          return;
-        }
+  //   return TreeView.indexed(
+  //     tree: _treeIndexed,
+  //     showRootNode: false,
+  //     expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
+  //       return ChevronIndicator.rightDown(
+  //         tree: node,
+  //         color: Colors.blue,
+  //         alignment: Alignment.centerLeft,
+  //       );
+  //     },
+  //     indentation: const Indentation(style: IndentStyle.squareJoint),
+  //     onItemTap: (IndexedTreeNode node) {
+  //       if (node.level > 1) {
+  //         return;
+  //       }
 
-        print('>> expansion indicator clicked ${_makeString(1)}');
-      },
-      onTreeReady: (TreeViewController<dynamic, IndexedTreeNode> controller) {
-        _treeViewController = controller;
-        if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexed);
-      },
-      // onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
-      //   _treeViewController = controller;
-      //   if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexed);
-      // },
-      // builder: (BuildContext context, TreeNode node) {
-      builder: (BuildContext context, IndexedTreeNode node) {
-        return Container(
-          width: 180,
-          height: 60,
-          margin: const EdgeInsets.only(left: 25),
-          decoration: BoxDecoration(
-            color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
-            border: Border.all(color: Colors.red),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              print('>> node key: ${node.key}, node hierarchy: ${node.level}');
-              _selectedNode = node.key;
-              setState(() {});
-            },
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(node.key),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //       print('>> expansion indicator clicked ${_makeString(1)}');
+  //     },
+  //     onTreeReady: (TreeViewController<dynamic, IndexedTreeNode> controller) {
+  //       _treeViewController = controller;
+  //       if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexed);
+  //     },
+  //     // onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
+  //     //   _treeViewController = controller;
+  //     //   if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexed);
+  //     // },
+  //     // builder: (BuildContext context, TreeNode node) {
+  //     builder: (BuildContext context, IndexedTreeNode node) {
+  //       return Container(
+  //         width: 180,
+  //         height: 60,
+  //         margin: const EdgeInsets.only(left: 25),
+  //         decoration: BoxDecoration(
+  //           color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
+  //           border: Border.all(color: Colors.red),
+  //         ),
+  //         child: GestureDetector(
+  //           onTap: () {
+  //             print('>> node key: ${node.key}, node hierarchy: ${node.level}');
+  //             _selectedNode = node.key;
+  //             setState(() {});
+  //           },
+  //           child: MouseRegion(
+  //             cursor: SystemMouseCursors.click,
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               child: Text(node.key),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
-  Widget _buildUITreeViewIndexTyped() {
-    return TreeView.simple(
-      tree: _treeIndexTyped,
-      showRootNode: false,
-      expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
-        return ChevronIndicator.rightDown(
-          tree: node,
-          color: Colors.blue,
-          alignment: Alignment.centerLeft,
-        );
-      },
-      indentation: const Indentation(style: IndentStyle.squareJoint),
-      onItemTap: (TreeNode node) {
-        if (node.level > 1) {
-          return;
-        }
+  // Widget _buildUITreeViewIndexTyped() {
+  //   return TreeView.simple(
+  //     tree: _treeIndexTyped,
+  //     showRootNode: false,
+  //     expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
+  //       return ChevronIndicator.rightDown(
+  //         tree: node,
+  //         color: Colors.blue,
+  //         alignment: Alignment.centerLeft,
+  //       );
+  //     },
+  //     indentation: const Indentation(style: IndentStyle.squareJoint),
+  //     onItemTap: (TreeNode node) {
+  //       if (node.level > 1) {
+  //         return;
+  //       }
 
-        print('>> expansion indicator clicked ${_makeString(1)}');
-      },
-      onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
-        _treeViewController = controller;
-        if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexTyped);
-      },
-      builder: (BuildContext context, TreeNode node) {
-        return Container(
-          width: 180,
-          height: 60,
-          margin: const EdgeInsets.only(left: 25),
-          decoration: BoxDecoration(
-            color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
-            border: Border.all(color: Colors.red),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              print('>> node key: ${node.key}, node hierarchy: ${node.level}');
-              _selectedNode = node.key;
-              setState(() {});
-            },
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(node.key),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //       print('>> expansion indicator clicked ${_makeString(1)}');
+  //     },
+  //     onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
+  //       _treeViewController = controller;
+  //       if (expandChildrenOnReady) controller.expandAllChildren(_treeIndexTyped);
+  //     },
+  //     builder: (BuildContext context, TreeNode node) {
+  //       return Container(
+  //         width: 180,
+  //         height: 60,
+  //         margin: const EdgeInsets.only(left: 25),
+  //         decoration: BoxDecoration(
+  //           color: _selectedNode != null && _selectedNode! == node.key ? Colors.blue : Colors.grey.shade100,
+  //           border: Border.all(color: Colors.red),
+  //         ),
+  //         child: GestureDetector(
+  //           onTap: () {
+  //             print('>> node key: ${node.key}, node hierarchy: ${node.level}');
+  //             _selectedNode = node.key;
+  //             setState(() {});
+  //           },
+  //           child: MouseRegion(
+  //             cursor: SystemMouseCursors.click,
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               child: Text(node.key),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _buildUITestButton() {
     return ElevatedButton(
       child: const Text('>> Testing <<'),
       onPressed: () {
+        // TODO: TreeNode 구조, 사용방법 #####
         _treeSimple;
 
-        // 22222
         final TreeNode<String> tree = TreeNode<String>.root();
         final TreeNode<String> tree2 = TreeNode<String>();
 
-        // tree.data;
-        inspect(tree2);
-        return;
-        final TreeNode<int> s1 = TreeNode<int>();
-        s1.data = 4;
-        final TreeNode s2 = TreeNode.root();
-        // print(s1);
-        // print(s2);
-        final zz = TreeNode.root()
+        final TreeNode<String> tree3 = TreeNode<String>.root()
+          // final TreeNode<String> tree3 = TreeNode<String>()
           ..addAll(
             <Node>[
               TreeNode(key: '0A')..add(TreeNode(key: '0A1A')),
@@ -499,7 +656,6 @@ class MyWidgetState extends State<MyWidget> {
                 ..addAll(
                   <Node>[
                     TreeNode(key: '0C1A'),
-                    TreeNode(key: '0C1B'),
                     TreeNode(key: '0C1C')
                       ..addAll(
                         <Node>[
@@ -507,16 +663,12 @@ class MyWidgetState extends State<MyWidget> {
                             ..addAll(
                               <Node>[
                                 TreeNode(key: '0C1C2A3A'),
-                                TreeNode(key: '0C1C2A3B'),
-                                TreeNode(key: '0C1C2A3C'),
                               ],
                             ),
                         ],
                       ),
                   ],
                 ),
-              TreeNode(key: '0D'),
-              TreeNode(key: '0E'),
             ],
           );
       },
