@@ -34,8 +34,11 @@ class MyWidgetState extends State<MyWidget> {
   TreeViewController? _treeViewController; // 트리 전체 열기, 전체 닫기 같은 이벤트에 사용
   // String? _selectedNode;
   TreeNode? _selectedNode;
+  TreeNode? _selectedNode2;
 
-//TODO: _treeSimple, _treeSimple.map, _treeSimple.list 형태 뽑아낸거 toJson으로 변환할줄알아야
+  //TODO: _treeSimple, _treeSimple.map, _treeSimple.list 형태 뽑아낸거 toJson으로 변환할줄알아야
+  // TreeNode? _treeSimple2;
+  TreeNode? _treeSimple2;
   final TreeNode _treeSimple = TreeNode.root()
     ..addAll(
       <Node>[
@@ -68,6 +71,16 @@ class MyWidgetState extends State<MyWidget> {
   //       TreeNode<String>(key: 'a'),
   //     ],
   //   );
+  final Node ee = Node(
+    key: '',
+    parent: Node(),
+  );
+
+  final TreeNode rr = TreeNode(
+    key: '',
+    parent: Node(),
+    data: '',
+  );
 
   final TreeNode _treeSimpleTyped = TreeNode.root()
     ..addAll(
@@ -148,6 +161,12 @@ class MyWidgetState extends State<MyWidget> {
     );
 
   @override
+  void initState() {
+    super.initState();
+    //
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // floatingActionButton: ValueListenableBuilder<bool>(
@@ -175,7 +194,10 @@ class MyWidgetState extends State<MyWidget> {
           // TreeView.indexTyped >> _buildUITreeViewIndexTyped
           _buildUITreeViewSimple(),
           const VerticalDivider(),
+          _buildUITreeViewSimple2(),
+          const VerticalDivider(),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _buildUIButtons(),
               Container(
@@ -244,6 +266,79 @@ class MyWidgetState extends State<MyWidget> {
     );
   }
 
+  Widget _buildUITreeViewSimple2() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: <Widget>[
+          const Text('TreeViewSimple2##'),
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            width: 200,
+            height: 700,
+            child: _buildUISimple2(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUISimple2() {
+    if (_treeSimple2 == null) {
+      return const Text('sssss');
+    }
+
+    return TreeView.simple(
+      tree: _treeSimple2!,
+      // showRootNode: false,
+      expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
+        return ChevronIndicator.rightDown(
+          tree: node,
+          color: Colors.blue,
+          alignment: Alignment.centerLeft,
+        );
+      },
+      indentation: const Indentation(style: IndentStyle.squareJoint),
+      onItemTap: (TreeNode node) {
+        if (node.level > 1) {
+          // 하위노드 expansion indicator 선택시 무시
+          return;
+        }
+
+        print('>> expansion indicator clicked ${node.key}');
+      },
+      onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
+        _treeViewController = controller;
+        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimple);
+      },
+      builder: (BuildContext context, TreeNode node) {
+        return Container(
+          width: 180,
+          height: 30,
+          margin: const EdgeInsets.only(left: 25),
+          decoration: BoxDecoration(
+            color: _selectedNode2 != null && _selectedNode2!.key == node.key ? Colors.blue : Colors.grey.shade100,
+            border: Border.all(color: Colors.red),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              print('>> node key: ${node.key}, node hierarchy: ${node.level}');
+              _selectedNode2 = node;
+              setState(() {});
+            },
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                alignment: Alignment.center,
+                child: Text(node.key),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildUISelectedNodeInfo() {
     return ListView(
       children: <Widget>[
@@ -253,7 +348,7 @@ class MyWidgetState extends State<MyWidget> {
             Container(
               alignment: Alignment.center,
               child: const Text(
-                '선택한 키 정보',
+                '선택한 키 정보99999',
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.green,
@@ -265,9 +360,9 @@ class MyWidgetState extends State<MyWidget> {
             _buildUIItem(title: 'parent key', desc: _selectedNode?.parent?.key),
             _buildUIItem(title: '선택된 키', desc: _selectedNode?.key),
             _buildUIItem(title: 'hierarchy', desc: _selectedNode?.level.toString()),
-            _buildUIItem(title: 'root ', desc: _treeSimple.children.toString()),
-            _buildUIItem(title: 'root ', desc: _treeSimple.childrenAsList.toString()),
-            _buildUIItem(title: 'root ', desc: _treeSimple.toString()),
+            _buildUIItem(title: '_treeSimple ', desc: _treeSimple.toString()),
+            _buildUIItem(title: '_treeSimple.children ', desc: _treeSimple.children.toString()),
+            _buildUIItem(title: '_treeSimple.childrenAsList ', desc: _treeSimple.childrenAsList.toString()),
             // _buildUIItem(title: 'root ', desc: _selectedNode?.level.toString()),
           ],
         ),
@@ -297,7 +392,7 @@ class MyWidgetState extends State<MyWidget> {
 
   Widget _buildUIButton({required String title, required void Function() onPressed, Color color = Colors.white}) {
     return Container(
-      width: 200,
+      width: 180,
       height: 50,
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ElevatedButton(
@@ -318,7 +413,7 @@ class MyWidgetState extends State<MyWidget> {
   Widget _buildUISimple() {
     return TreeView.simple(
       tree: _treeSimple,
-      showRootNode: false,
+      // showRootNode: false,
       expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
         // ExpansionIndicator
         return ChevronIndicator.rightDown(
@@ -575,7 +670,120 @@ class MyWidgetState extends State<MyWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(
-          width: 300,
+          width: 200,
+          child: Column(
+            children: <Widget>[
+              _buildUIButton(
+                title: 'Tree 복사11111',
+                onPressed: () {
+                  _treeSimple;
+                  _treeSimple2;
+                  _treeSimple.childrenAsList;
+                  _treeSimple.children;
+
+                  // _buildUIItem(title: 'root ', desc: _treeSimple.children.toString()),
+                  // _buildUIItem(title: 'root ', desc: _treeSimple.childrenAsList.toString()),
+                  // _buildUIItem(title: 'root ', desc: _treeSimple.toString()),
+
+                  // print(_treeSimple.children.runtimeType);
+                  // print(_treeSimple.childrenAsList.runtimeType);
+                  // print(_treeSimple.runtimeType);
+
+                  // for (final ListenableNode element in _treeSimple.childrenAsList) {}
+
+                  // for (final MapEntry<String, Node> element in _treeSimple.children.entries) {
+                  //   // print('>> ${element.key}');
+                  //   // print('** ${element.value.key}');
+                  //   print('^^ ${element.value.children}');
+                  // }
+
+                  // for (final String element in _treeSimple.children.keys.toList()) {}
+                  // for (final Node element in _treeSimple.children.values) {}
+                  // setState(() {});
+
+                  _treeSimple;
+                  _treeSimple.children;
+                  _treeSimple.childrenAsList;
+                  _treeSimple2 = TreeNode.root();
+                  _treeSimple.children.values.toList().first.children.isEmpty;
+
+                  _treeSimple2!.addAll(
+                    <Node>[
+                      TreeNode(key: 'a')
+                        ..addAll(
+                          <Node>[
+                            TreeNode(key: '1'),
+                          ],
+                        ),
+                      TreeNode(key: 'b')
+                        ..addAll(
+                          <Node>[
+                            TreeNode(key: '4'),
+                          ],
+                        ),
+                      TreeNode(key: 'd')
+                        ..addAll(
+                          <Node>[
+                            //
+                          ],
+                        ),
+                    ],
+                  );
+                },
+              ),
+              _buildUIButton(
+                title: 'Tree 복사22222',
+                onPressed: () {
+                  _treeSimple;
+                  _treeSimple.children;
+                  _treeSimple.childrenAsList;
+                  _treeSimple2 = TreeNode.root();
+                  _treeSimple.children.values.toList().first.children.isEmpty;
+                  final TreeNode ww = TreeNode.root()
+                    ..add(
+                      TreeNode(key: 'd')
+                        ..add(
+                          TreeNode(key: '1'),
+                        ),
+                    );
+
+                  // print(ww.children);
+                  // print(ww.children.values.toList());
+                  // print(ww.children.values.toList().first);
+                  print(ww.children.values.toList().first.children);
+                  print(ww.children.values.toList().first.children.isEmpty);
+
+                  for (final Node element in ww.children.values.toList()) {
+                    _copyNode(element);
+                  }
+                },
+              ),
+              _buildUIButton(
+                title: 'Tree 복사33333',
+                onPressed: () {
+                  _treeSimple2 = TreeNode.root();
+
+                  for (final Node element in _treeSimple.children.values.toList()) {
+                    // final ww =
+                    _copyNode(element);
+                  }
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: 'Tree Reset44444',
+                onPressed: () {
+                  _treeSimple2 = null;
+
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 200,
           child: Column(
             children: <Widget>[
               _buildUIButton(
@@ -645,7 +853,7 @@ class MyWidgetState extends State<MyWidget> {
           ),
         ),
         SizedBox(
-          width: 300,
+          width: 200,
           child: Column(
             children: <Widget>[
               _buildUIButton(
@@ -778,6 +986,19 @@ class MyWidgetState extends State<MyWidget> {
         ),
       ],
     );
+  }
+
+  void _copyNode(Node node) {
+    if (node.children.isEmpty) {
+      // node.add(TreeNode(key: node.key));
+      return;
+    }
+
+    for (final Node element in node.children.values.toList()) {
+      _copyNode(element);
+    }
+
+    _treeSimple2!.add(TreeNode(key: node.key));
   }
 
   String _makeString(int length) {
