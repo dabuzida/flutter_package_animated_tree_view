@@ -35,6 +35,7 @@ class MyWidgetState extends State<MyWidget> {
   // String? _selectedNode;
   TreeNode? _selectedNode;
 
+//TODO: _treeSimple, _treeSimple.map, _treeSimple.list 형태 뽑아낸거 toJson으로 변환할줄알아야
   final TreeNode _treeSimple = TreeNode.root()
     ..addAll(
       <Node>[
@@ -172,266 +173,78 @@ class MyWidgetState extends State<MyWidget> {
           // TreeView.simpleTyped >> _buildUITreeViewSimpleTyped
           // TreeView.indexed >> _buildUITreeViewIndexed
           // TreeView.indexTyped >> _buildUITreeViewIndexTyped
-          Column(
-            children: <Widget>[
-              const Text('TreeViewSimple'),
-              Container(
-                decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-                width: 200,
-                height: 700,
-                child: _buildUITreeViewSimple(),
-              ),
-              _buildUITestButton(),
-            ],
-          ),
+          _buildUITreeViewSimple(),
           const VerticalDivider(),
           Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 300,
-                    child: Column(
-                      children: <Widget>[
-                        _buildUIButton(
-                          title: '상위 노드 추가',
-                          onPressed: () {
-                            // 중복 키가 존재하면 불가
-                            _treeSimple.add(TreeNode(key: _makeString(5)));
-
-                            setState(() {});
-                          },
-                        ),
-                        _buildUIButton(
-                          title: '상위 노드 삭제',
-                          onPressed: () {
-                            if (_selectedNode == null || _selectedNode!.level > 1) {
-                              print('상위 노드를 선택하세요');
-                              return;
-                            }
-
-                            // 로직. 하위 노드도 같이 모두 삭제
-                            _treeSimple.removeWhere(
-                              (Node element) {
-                                final bool isTrue = _selectedNode!.key == element.key;
-                                if (isTrue) {
-                                  print('${_selectedNode!.key} ${element.key}');
-                                }
-                                return isTrue;
-                              },
-                            );
-
-                            setState(() {});
-                          },
-                        ),
-                        _buildUIButton(
-                          title: '상/하위 노드 추가',
-                          color: Colors.purple.shade200,
-                          onPressed: () {
-                            // _treeSimple.addAll(
-                            //   <Node>[
-                            //     TreeNode(key: _makeString(6))..add(TreeNode(key: _makeString(6))),
-                            //     TreeNode(key: _makeString(6))
-                            //       ..addAll(
-                            //         <Node>[
-                            //           TreeNode(key: _makeString(6)),
-                            //           TreeNode(key: _makeString(6)),
-                            //           TreeNode(key: _makeString(6)),
-                            //         ],
-                            //       ),
-                            //   ],
-                            // );
-                            final List<Node> parentNodeList = <Node>[];
-                            final List<Node> childNodeList = <Node>[];
-
-                            for (int i = 0; i < _makeNumber(); i++) {
-                              childNodeList.clear();
-                              for (int j = 0; j < _makeNumber(); j++) {
-                                childNodeList.add(TreeNode(key: _makeString(6)));
-                              }
-                              parentNodeList.add(
-                                TreeNode(key: _makeString(6))..addAll(childNodeList),
-                              );
-                            }
-
-                            _treeSimple.addAll(parentNodeList);
-
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: Column(
-                      children: <Widget>[
-                        _buildUIButton(
-                          title: '하위 노드 추가',
-                          onPressed: () {
-                            if (_selectedNode == null || _selectedNode!.level > 1) {
-                              print('상위 노드를 선택하세요');
-                              return;
-                            }
-
-                            _selectedNode!.add(TreeNode(key: _makeString(5)));
-
-                            setState(() {});
-                          },
-                        ),
-                        _buildUIButton(
-                          title: '하위 노드 삭제',
-                          color: Colors.red,
-                          onPressed: () {
-                            // 테스트 중
-                            return;
-                            // if (_selectedNode == null || _selectedNode!.level < 2) {
-                            //   print('하위 노드를 선택하세요');
-                            //   return;
-                            // }
-
-                            // final TreeNode tre3eSimple = TreeNode.root();
-                            // Node ww = Node();
-
-                            // for (ListenableNode element in _treeSimple.childrenAsList) {
-                            //   print(element.key); // 상위 노드 키
-                            // }
-
-                            _treeSimple;
-                            _selectedNode;
-
-                            // _treeSimple.removeWhere(
-                            //   (Node element) {
-                            //     element.parent?.key;
-                            //     element.key;
-                            //     element.level;
-
-                            //     final bool isSameParent = _selectedNode!.parent!.key == element.parent?.key;
-                            //     // final bool isSameHierachy = _selectedNode!.level == element.level;
-                            //     final bool isSameKey = _selectedNode!.key == element.key;
-                            //     print('${_selectedNode!.key} ${element.key}');
-                            //     return isSameKey;
-                            //     // return isSameParent && isSameKey;
-                            //     // return isSameParent && isSameHierachy && isSameKey;
-                            //   },
-                            // );
-
-                            // _treeSimple.childrenAsList.removeWhere(
-                            //   (Node element) {
-                            //     element.parent?.key;
-                            //     element.key;
-                            //     element.level;
-
-                            //     final bool isSameParent = _selectedNode!.parent!.key == element.parent?.key;
-                            //     // final bool isSameHierachy = _selectedNode!.level == element.level;
-                            //     final bool isSameKey = _selectedNode!.key == element.key;
-                            //     print('${_selectedNode!.key} ${element.key}');
-                            //     return isSameKey;
-                            //     // return isSameParent && isSameKey;
-                            //     // return isSameParent && isSameHierachy && isSameKey;
-                            //   },
-                            // );
-                            _selectedNode;
-                            _treeSimple.childrenAsList.removeWhere(
-                              (Node element) {
-                                element.parent?.key;
-                                element.key;
-                                element.level;
-                                print(element.key);
-                                print(_selectedNode?.key);
-                                return false;
-                              },
-                            );
-
-                            setState(() {});
-                          },
-                        ),
-                        _buildUIButton(
-                          title: '하위 노드 삭제2',
-                          onPressed: () {
-                            if (_selectedNode == null || _selectedNode!.level < 2) {
-                              print('하위 노드를 선택하세요');
-                              return;
-                            }
-
-                            _treeSimple.removeWhere(
-                              (Node element) {
-                                element.removeWhere(
-                                  (Node element) {
-                                    final bool isTrue = _selectedNode!.key == element.key;
-                                    if (isTrue) {
-                                      print('${_selectedNode!.key} ${element.key}');
-                                    }
-
-                                    return isTrue;
-                                  },
-                                );
-
-                                return false;
-                              },
-                            );
-
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              _buildUIButtons(),
               Container(
                 width: 600,
                 height: 500,
                 decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-                child: _buildUINodeInfo(),
+                child: _buildUISelectedNodeInfo(),
               ),
             ],
           ),
-
-          // const VerticalDivider(),
-          // Column(
-          //   children: <Widget>[
-          //     const Text('TreeViewSimpleTyped'),
-          //     Container(
-          //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-          //       width: 200,
-          //       height: 700,
-          //       child: _buildUITreeViewSimpleTyped(),
-          //     ),
-          //   ],
-          // ),
-          // const VerticalDivider(),
-          // Column(
-          //   children: <Widget>[
-          //     const Text('TreeViewIndexed'),
-          //     Container(
-          //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-          //       width: 200,
-          //       height: 700,
-          //       child: _buildUITreeViewIndexed(),
-          //     ),
-          //   ],
-          // ),
-          // const VerticalDivider(),
-          // Column(
-          //   children: <Widget>[
-          //     const Text('TreeViewIndexTyped'),
-          //     Container(
-          //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-          //       width: 200,
-          //       height: 700,
-          //       child: _buildUITreeViewIndexTyped(),
-          //     ),
-          //   ],
-          // ),
-
-          //
         ],
       ),
     );
   }
 
-  Widget _buildUINodeInfo() {
+  // const VerticalDivider(),
+  // Column(
+  //   children: <Widget>[
+  //     const Text('TreeViewSimpleTyped'),
+  //     Container(
+  //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+  //       width: 200,
+  //       height: 700,
+  //       child: _buildUITreeViewSimpleTyped(),
+  //     ),
+  //   ],
+  // ),
+  // const VerticalDivider(),
+  // Column(
+  //   children: <Widget>[
+  //     const Text('TreeViewIndexed'),
+  //     Container(
+  //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+  //       width: 200,
+  //       height: 700,
+  //       child: _buildUITreeViewIndexed(),
+  //     ),
+  //   ],
+  // ),
+  // const VerticalDivider(),
+  // Column(
+  //   children: <Widget>[
+  //     const Text('TreeViewIndexTyped'),
+  //     Container(
+  //       decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+  //       width: 200,
+  //       height: 700,
+  //       child: _buildUITreeViewIndexTyped(),
+  //     ),
+  //   ],
+  // ),
+  Widget _buildUITreeViewSimple() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: <Widget>[
+          const Text('TreeViewSimple'),
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            width: 200,
+            height: 700,
+            child: _buildUISimple(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUISelectedNodeInfo() {
     return ListView(
       children: <Widget>[
         Column(
@@ -466,6 +279,7 @@ class MyWidgetState extends State<MyWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Expanded(
             child: Text(title),
@@ -501,7 +315,7 @@ class MyWidgetState extends State<MyWidget> {
     );
   }
 
-  Widget _buildUITreeViewSimple() {
+  Widget _buildUISimple() {
     return TreeView.simple(
       tree: _treeSimple,
       showRootNode: false,
@@ -756,42 +570,213 @@ class MyWidgetState extends State<MyWidget> {
   //     },
   //   );
   // }
+  Widget _buildUIButtons() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          width: 300,
+          child: Column(
+            children: <Widget>[
+              _buildUIButton(
+                title: '상위 노드 추가',
+                onPressed: () {
+                  _treeSimple.add(TreeNode(key: _makeString(5)));
 
-  Widget _buildUITestButton() {
-    return ElevatedButton(
-      child: const Text('>> Testing <<'),
-      onPressed: () {
-        // TODO: TreeNode 구조, 사용방법 #####
-        _treeSimple;
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: '상위 노드 삭제',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level > 1) {
+                    print('상위 노드를 선택하세요');
+                    return;
+                  }
 
-        final TreeNode<String> tree = TreeNode<String>.root();
-        final TreeNode<String> tree2 = TreeNode<String>();
+                  _treeSimple.removeWhere(
+                    (Node element) {
+                      // 하위 노드 같이 삭제
+                      return _selectedNode!.key == element.key;
+                    },
+                  );
 
-        final TreeNode<String> tree3 = TreeNode<String>.root()
-          // final TreeNode<String> tree3 = TreeNode<String>()
-          ..addAll(
-            <Node>[
-              TreeNode(key: '0A')..add(TreeNode(key: '0A1A')),
-              TreeNode(key: '0C')
-                ..addAll(
-                  <Node>[
-                    TreeNode(key: '0C1A'),
-                    TreeNode(key: '0C1C')
-                      ..addAll(
-                        <Node>[
-                          TreeNode(key: '0C1C2A')
-                            ..addAll(
-                              <Node>[
-                                TreeNode(key: '0C1C2A3A'),
-                              ],
-                            ),
-                        ],
-                      ),
-                  ],
-                ),
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: '상/하위 노드 추가',
+                color: Colors.purple.shade200,
+                onPressed: () {
+                  // _treeSimple.addAll(
+                  //   <Node>[
+                  //     TreeNode(key: _makeString(6))..add(TreeNode(key: _makeString(6))),
+                  //     TreeNode(key: _makeString(6))
+                  //       ..addAll(
+                  //         <Node>[
+                  //           TreeNode(key: _makeString(6)),
+                  //           TreeNode(key: _makeString(6)),
+                  //           TreeNode(key: _makeString(6)),
+                  //         ],
+                  //       ),
+                  //   ],
+                  // );
+                  final List<Node> parentNodeList = <Node>[];
+                  final List<Node> childNodeList = <Node>[];
+
+                  for (int i = 0; i < _makeNumber(); i++) {
+                    childNodeList.clear();
+
+                    for (int j = 0; j < _makeNumber(); j++) {
+                      childNodeList.add(TreeNode(key: _makeString(6)));
+                    }
+
+                    parentNodeList.add(
+                      TreeNode(key: _makeString(6))..addAll(childNodeList),
+                    );
+                  }
+
+                  _treeSimple.addAll(parentNodeList);
+
+                  setState(() {});
+                },
+              ),
             ],
-          );
-      },
+          ),
+        ),
+        SizedBox(
+          width: 300,
+          child: Column(
+            children: <Widget>[
+              _buildUIButton(
+                title: '하위 노드 추가',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level > 1) {
+                    print('상위 노드를 선택하세요');
+                    return;
+                  }
+
+                  _selectedNode!.add(TreeNode(key: _makeString(5)));
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: '하위 노드 삭제',
+                onPressed: () {
+                  if (_selectedNode == null || _selectedNode!.level < 2) {
+                    print('하위 노드를 선택하세요');
+                    return;
+                  }
+
+                  // 선택된 하위노드 id: 상위노드 key, 하위노드 level로 구분
+                  _treeSimple.removeWhere(
+                    (Node element) {
+                      element.removeWhere(
+                        (Node element) {
+                          return _selectedNode!.key == element.key;
+                        },
+                      );
+
+                      return false;
+                    },
+                  );
+
+                  setState(() {});
+                },
+              ),
+              //
+              _buildUIButton(
+                title: '테스트',
+                color: Colors.red,
+                onPressed: () {
+                  _selectedNode;
+                  _treeSimple;
+                  _treeSimple.childrenAsList;
+                  _treeSimple.children;
+
+                  print('********** 1 **********');
+                  for (final ListenableNode element in _treeSimple.childrenAsList) {
+                    // print(element.key); // 상위 노드 키
+                    // print(element.value);
+                    // print(element.parent);
+                    // print(element.children);
+                    // print(element.childrenAsList);
+                  }
+
+                  print('********** 2 **********');
+                  for (final MapEntry<String, Node> element in _treeSimple.children.entries) {
+                    // print(element.key);
+                    // print(element.value);
+                  }
+
+                  print('********** 3 **********');
+                  for (final String element in _treeSimple.children.keys.toList()) {
+                    print(element);
+                  }
+
+                  print('********** 4 **********');
+                  for (final Node element in _treeSimple.children.values.toList()) {
+                    print(element);
+                  }
+
+                  return;
+                  final TreeNode tre3eSimple = TreeNode.root();
+                  Node ww = Node();
+
+                  /////////////////////////////////////////////////////////////////////
+
+                  _treeSimple.removeWhere(
+                    (Node element) {
+                      element.parent?.key;
+                      element.key;
+                      element.level;
+
+                      final bool isSameParent = _selectedNode!.parent!.key == element.parent?.key;
+                      // final bool isSameHierachy = _selectedNode!.level == element.level;
+                      final bool isSameKey = _selectedNode!.key == element.key;
+                      print('${_selectedNode!.key} ${element.key}');
+                      return isSameKey;
+                      // return isSameParent && isSameKey;
+                      // return isSameParent && isSameHierachy && isSameKey;
+                    },
+                  );
+
+                  _treeSimple.childrenAsList.removeWhere(
+                    (Node element) {
+                      element.parent?.key;
+                      element.key;
+                      element.level;
+
+                      final bool isSameParent = _selectedNode!.parent!.key == element.parent?.key;
+                      // final bool isSameHierachy = _selectedNode!.level == element.level;
+                      final bool isSameKey = _selectedNode!.key == element.key;
+                      print('${_selectedNode!.key} ${element.key}');
+                      return isSameKey;
+                      // return isSameParent && isSameKey;
+                      // return isSameParent && isSameHierachy && isSameKey;
+                    },
+                  );
+
+                  /////////////////////////////////////////////////////////////////////
+                  _treeSimple.childrenAsList.removeWhere(
+                    (Node element) {
+                      element.parent?.key;
+                      element.key;
+                      element.level;
+                      print(element.key);
+                      print(_selectedNode?.key);
+                      return false;
+                    },
+                  );
+
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
