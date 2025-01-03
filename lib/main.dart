@@ -4,6 +4,11 @@ import 'dart:math';
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 
+import 'tree_view_index_typed.dart';
+import 'tree_view_indexed.dart';
+import 'tree_view_simple.dart';
+import 'tree_view_simple_typed.dart';
+
 const showSnackBar = false;
 const expandChildrenOnReady = true;
 
@@ -16,9 +21,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Animated Tree View',
-      home: MyWidget(),
+    return MaterialApp(
+      title: 'package: animated_tree_view',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('package: animated_tree_view'),
+          centerTitle: true,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.teal,
+        ),
+        backgroundColor: Colors.white,
+        body: ListView(
+          children: const <Widget>[
+            TreeViewSimple(),
+            // TreeViewSimpleTyped(),
+            // TreeViewIndexed(),
+            // TreeViewIndexTyped(),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -36,15 +57,14 @@ class MyWidgetState extends State<MyWidget> {
   TreeNode? _selectedNode;
   TreeNode? _selectedNode2;
 
-  //TODO: _treeSimple, _treeSimple.map, _treeSimple.list 형태 뽑아낸거 toJson으로 변환할줄알아야
   // TreeNode? _treeSimple2;
-  TreeNode? _treeSimple2;
-  final TreeNode _treeSimple = TreeNode.root()
+  TreeNode? _treeSimpleCopy;
+  final TreeNode _treeSimpleOriginal = TreeNode.root()
     ..addAll(
-      <Node>[
+      [
         TreeNode(key: 'a')
           ..addAll(
-            <Node>[
+            [
               TreeNode(key: '1'),
               TreeNode(key: '2'),
               TreeNode(key: '3'),
@@ -52,13 +72,13 @@ class MyWidgetState extends State<MyWidget> {
           ),
         TreeNode(key: 'b')
           ..addAll(
-            <Node>[
+            [
               TreeNode(key: '4'),
             ],
           ),
         TreeNode(key: 'd')
           ..addAll(
-            <Node>[
+            [
               //
             ],
           ),
@@ -284,12 +304,12 @@ class MyWidgetState extends State<MyWidget> {
   }
 
   Widget _buildUISimple2() {
-    if (_treeSimple2 == null) {
-      return const Text('sssss');
+    if (_treeSimpleCopy == null) {
+      return const Text('empty');
     }
 
     return TreeView.simple(
-      tree: _treeSimple2!,
+      tree: _treeSimpleCopy!,
       // showRootNode: false,
       expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
         return ChevronIndicator.rightDown(
@@ -309,7 +329,7 @@ class MyWidgetState extends State<MyWidget> {
       },
       onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
         _treeViewController = controller;
-        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimple);
+        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimpleOriginal);
       },
       builder: (BuildContext context, TreeNode node) {
         return Container(
@@ -360,9 +380,9 @@ class MyWidgetState extends State<MyWidget> {
             _buildUIItem(title: 'parent key', desc: _selectedNode?.parent?.key),
             _buildUIItem(title: '선택된 키', desc: _selectedNode?.key),
             _buildUIItem(title: 'hierarchy', desc: _selectedNode?.level.toString()),
-            _buildUIItem(title: '_treeSimple ', desc: _treeSimple.toString()),
-            _buildUIItem(title: '_treeSimple.children ', desc: _treeSimple.children.toString()),
-            _buildUIItem(title: '_treeSimple.childrenAsList ', desc: _treeSimple.childrenAsList.toString()),
+            _buildUIItem(title: '_treeSimple ', desc: _treeSimpleOriginal.toString()),
+            _buildUIItem(title: '_treeSimple.children ', desc: _treeSimpleOriginal.children.toString()),
+            _buildUIItem(title: '_treeSimple.childrenAsList ', desc: _treeSimpleOriginal.childrenAsList.toString()),
             // _buildUIItem(title: 'root ', desc: _selectedNode?.level.toString()),
           ],
         ),
@@ -412,7 +432,7 @@ class MyWidgetState extends State<MyWidget> {
 
   Widget _buildUISimple() {
     return TreeView.simple(
-      tree: _treeSimple,
+      tree: _treeSimpleOriginal,
       // showRootNode: false,
       expansionIndicatorBuilder: (BuildContext context, ITreeNode node) {
         // ExpansionIndicator
@@ -440,7 +460,7 @@ class MyWidgetState extends State<MyWidget> {
       },
       onTreeReady: (TreeViewController<dynamic, TreeNode> controller) {
         _treeViewController = controller;
-        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimple);
+        if (expandChildrenOnReady) controller.expandAllChildren(_treeSimpleOriginal);
       },
       builder: (BuildContext context, TreeNode node) {
         // return Container(
@@ -676,10 +696,10 @@ class MyWidgetState extends State<MyWidget> {
               _buildUIButton(
                 title: 'Tree 복사11111',
                 onPressed: () {
-                  _treeSimple;
-                  _treeSimple2;
-                  _treeSimple.childrenAsList;
-                  _treeSimple.children;
+                  _treeSimpleOriginal;
+                  _treeSimpleCopy;
+                  _treeSimpleOriginal.childrenAsList;
+                  _treeSimpleOriginal.children;
 
                   // _buildUIItem(title: 'root ', desc: _treeSimple.children.toString()),
                   // _buildUIItem(title: 'root ', desc: _treeSimple.childrenAsList.toString()),
@@ -701,13 +721,13 @@ class MyWidgetState extends State<MyWidget> {
                   // for (final Node element in _treeSimple.children.values) {}
                   // setState(() {});
 
-                  _treeSimple;
-                  _treeSimple.children;
-                  _treeSimple.childrenAsList;
-                  _treeSimple2 = TreeNode.root();
-                  _treeSimple.children.values.toList().first.children.isEmpty;
+                  _treeSimpleOriginal;
+                  _treeSimpleOriginal.children;
+                  _treeSimpleOriginal.childrenAsList;
+                  _treeSimpleCopy = TreeNode.root();
+                  _treeSimpleOriginal.children.values.toList().first.children.isEmpty;
 
-                  _treeSimple2!.addAll(
+                  _treeSimpleCopy!.addAll(
                     <Node>[
                       TreeNode(key: 'a')
                         ..addAll(
@@ -734,11 +754,11 @@ class MyWidgetState extends State<MyWidget> {
               _buildUIButton(
                 title: 'Tree 복사22222',
                 onPressed: () {
-                  _treeSimple;
-                  _treeSimple.children;
-                  _treeSimple.childrenAsList;
-                  _treeSimple2 = TreeNode.root();
-                  _treeSimple.children.values.toList().first.children.isEmpty;
+                  _treeSimpleOriginal;
+                  _treeSimpleOriginal.children;
+                  _treeSimpleOriginal.childrenAsList;
+                  _treeSimpleCopy = TreeNode.root();
+                  _treeSimpleOriginal.children.values.toList().first.children.isEmpty;
                   final TreeNode ww = TreeNode.root()
                     ..add(
                       TreeNode(key: 'd')
@@ -754,27 +774,55 @@ class MyWidgetState extends State<MyWidget> {
                   print(ww.children.values.toList().first.children.isEmpty);
 
                   for (final Node element in ww.children.values.toList()) {
-                    _copyNode(element);
+                    // _copyNode(element);
                   }
                 },
               ),
               _buildUIButton(
                 title: 'Tree 복사33333',
                 onPressed: () {
-                  _treeSimple2 = TreeNode.root();
+                  final List<TreeNode> treeNodeList = <TreeNode>[];
 
-                  for (final Node element in _treeSimple.children.values.toList()) {
-                    // final ww =
-                    _copyNode(element);
+                  for (final Node node in _treeSimpleOriginal.children.values) {
+                    final List<TreeNode> childList = <TreeNode>[];
+                    for (final String element in node.children.keys) {
+                      childList.add(TreeNode(key: element));
+                    }
+                    treeNodeList.add(TreeNode(key: node.key)..addAll(childList));
+                  }
+
+                  _treeSimpleCopy = TreeNode.root();
+                  for (final TreeNode element in treeNodeList) {
+                    _copyNode(parentNode: _treeSimpleCopy!, node: element);
                   }
 
                   setState(() {});
                 },
               ),
               _buildUIButton(
-                title: 'Tree Reset44444',
+                title: 'Tree 복사77777',
                 onPressed: () {
-                  _treeSimple2 = null;
+                  _treeSimpleCopy = TreeNode.root();
+                  for (final Node element in _treeSimpleOriginal.children.values.toList()) {
+                    _copyNode3(parentNode: _treeSimpleCopy!, node: element);
+                  }
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: 'Tree 복사44444',
+                onPressed: () {
+                  _treeSimpleCopy = TreeNode.root();
+                  _copyNode2(parentNode: _treeSimpleCopy!, node: _treeSimpleOriginal);
+
+                  setState(() {});
+                },
+              ),
+              _buildUIButton(
+                title: 'Tree Reset99999',
+                onPressed: () {
+                  _treeSimpleCopy = null;
 
                   setState(() {});
                 },
@@ -789,7 +837,7 @@ class MyWidgetState extends State<MyWidget> {
               _buildUIButton(
                 title: '상위 노드 추가',
                 onPressed: () {
-                  _treeSimple.add(TreeNode(key: _makeString(5)));
+                  _treeSimpleOriginal.add(TreeNode(key: _makeString(5)));
 
                   setState(() {});
                 },
@@ -802,7 +850,7 @@ class MyWidgetState extends State<MyWidget> {
                     return;
                   }
 
-                  _treeSimple.removeWhere(
+                  _treeSimpleOriginal.removeWhere(
                     (Node element) {
                       // 하위 노드 같이 삭제
                       return _selectedNode!.key == element.key;
@@ -844,7 +892,7 @@ class MyWidgetState extends State<MyWidget> {
                     );
                   }
 
-                  _treeSimple.addAll(parentNodeList);
+                  _treeSimpleOriginal.addAll(parentNodeList);
 
                   setState(() {});
                 },
@@ -878,7 +926,7 @@ class MyWidgetState extends State<MyWidget> {
                   }
 
                   // 선택된 하위노드 id: 상위노드 key, 하위노드 level로 구분
-                  _treeSimple.removeWhere(
+                  _treeSimpleOriginal.removeWhere(
                     (Node element) {
                       element.removeWhere(
                         (Node element) {
@@ -899,12 +947,12 @@ class MyWidgetState extends State<MyWidget> {
                 color: Colors.red,
                 onPressed: () {
                   _selectedNode;
-                  _treeSimple;
-                  _treeSimple.childrenAsList;
-                  _treeSimple.children;
+                  _treeSimpleOriginal;
+                  _treeSimpleOriginal.childrenAsList;
+                  _treeSimpleOriginal.children;
 
                   print('********** 1 **********');
-                  for (final ListenableNode element in _treeSimple.childrenAsList) {
+                  for (final ListenableNode element in _treeSimpleOriginal.childrenAsList) {
                     // print(element.key); // 상위 노드 키
                     // print(element.value);
                     // print(element.parent);
@@ -913,18 +961,18 @@ class MyWidgetState extends State<MyWidget> {
                   }
 
                   print('********** 2 **********');
-                  for (final MapEntry<String, Node> element in _treeSimple.children.entries) {
+                  for (final MapEntry<String, Node> element in _treeSimpleOriginal.children.entries) {
                     // print(element.key);
                     // print(element.value);
                   }
 
                   print('********** 3 **********');
-                  for (final String element in _treeSimple.children.keys.toList()) {
+                  for (final String element in _treeSimpleOriginal.children.keys.toList()) {
                     print(element);
                   }
 
                   print('********** 4 **********');
-                  for (final Node element in _treeSimple.children.values.toList()) {
+                  for (final Node element in _treeSimpleOriginal.children.values.toList()) {
                     print(element);
                   }
 
@@ -934,7 +982,7 @@ class MyWidgetState extends State<MyWidget> {
 
                   /////////////////////////////////////////////////////////////////////
 
-                  _treeSimple.removeWhere(
+                  _treeSimpleOriginal.removeWhere(
                     (Node element) {
                       element.parent?.key;
                       element.key;
@@ -950,7 +998,7 @@ class MyWidgetState extends State<MyWidget> {
                     },
                   );
 
-                  _treeSimple.childrenAsList.removeWhere(
+                  _treeSimpleOriginal.childrenAsList.removeWhere(
                     (Node element) {
                       element.parent?.key;
                       element.key;
@@ -967,7 +1015,7 @@ class MyWidgetState extends State<MyWidget> {
                   );
 
                   /////////////////////////////////////////////////////////////////////
-                  _treeSimple.childrenAsList.removeWhere(
+                  _treeSimpleOriginal.childrenAsList.removeWhere(
                     (Node element) {
                       element.parent?.key;
                       element.key;
@@ -988,17 +1036,124 @@ class MyWidgetState extends State<MyWidget> {
     );
   }
 
-  void _copyNode(Node node) {
+  // void _copyNode(Node node) {
+  //   if (node.children.isEmpty) {
+  //     // node.add(TreeNode(key: node.key));
+  //     print('1 >> ${node.key}');
+  //     return;
+  //   }
+
+  //   for (final Node element in node.children.values.toList()) {
+  //     print('2 >> ${node.key}');
+  //     _copyNode(element);
+  //   }
+
+  //   print('3 >> ${node.key}');
+  //   // _treeSimple2!.add(Node(key: node.key));
+  //   _treeSimple2!.add(TreeNode(key: node.key));
+  // }
+
+  // void _copyNode({required TreeNode parentNode, required TreeNode node}) {
+  //   if (node.children.isEmpty) {
+  //     print('1 >> ${node.key}');
+  //     parentNode.add(node);
+  //     return;
+  //   }
+  //   // parentNode.add(TreeNode(key: addingNode.key));
+  //   // final TreeNode treeNode = TreeNode(key: node.key);
+  //   print('>> *****');
+  //   final Map<String, TreeNode> treeNodeList = <String, TreeNode>{};
+  //   for (final MapEntry<String, Node> element in node.children.entries) {
+  //     final List<TreeNode> ww = <TreeNode>[];
+  //     for (final String element in element.value.children.keys) {
+  //       ww.add(TreeNode(key: element));
+  //     }
+  //     treeNodeList[element.key] = TreeNode(key: element.value.key)..addAll(ww);
+  //   }
+
+  //   for (final TreeNode element in treeNodeList.values.toList()) {
+  //     print('2 >> ${node.key}');
+  //     _copyNode(parentNode: node, node: element);
+  //   }
+  // }
+
+  void _copyNode({required TreeNode parentNode, required TreeNode node}) {
     if (node.children.isEmpty) {
-      // node.add(TreeNode(key: node.key));
+      print('1 >> ${node.key}');
+      parentNode.add(node);
       return;
     }
 
-    for (final Node element in node.children.values.toList()) {
-      _copyNode(element);
+    final List<TreeNode> treeNodeList = <TreeNode>[];
+    for (final Node node in node.children.values) {
+      final List<TreeNode> childList = <TreeNode>[];
+      for (final String element in node.children.keys) {
+        childList.add(TreeNode(key: element));
+      }
+      treeNodeList.add(TreeNode(key: node.key)..addAll(childList));
     }
 
-    _treeSimple2!.add(TreeNode(key: node.key));
+    for (final TreeNode element in treeNodeList) {
+      print('2 >> ${node.key}');
+      // _copyNode(parentNode: node, node: element);
+    }
+  }
+
+  void _copyNode3({required TreeNode parentNode, required Node node}) {
+    if (node.children.isEmpty) {
+      parentNode.add(node);
+      return;
+    }
+
+    for (final Node element in node.children.values) {
+      _copyNode3(parentNode: node as TreeNode, node: element);
+    }
+  }
+
+  // _copyNode2(parentNode: _treeSimpleCopy!, node: _treeSimpleOriginal);
+  void _copyNode2({required TreeNode parentNode, required TreeNode node}) {
+    // if (node.children.isEmpty) {
+    //   if (node.key != '/' && parentNode.key != node.key) {
+    //     final TreeNode treeNode = TreeNode(key: node.key);
+    //     parentNode.add(treeNode);
+    //   }
+
+    //   return;
+    // }
+
+    if (node.children.isEmpty) {
+      if (node.key == '/' || parentNode.key == node.key) {
+        return;
+      }
+    }
+
+    // parentNode.add(TreeNode(key: node.key));
+    for (final Node element in node.children.values) {
+      // final TreeNode node = TreeNode(key: element.key)..addAll(element.children.values);
+      final TreeNode treeNode = TreeNode(key: element.key);
+      // final TreeNode treeNode2 = TreeNode(key: element.key)..addAll(element.children.values);
+      final TreeNode treeNode2 = element as TreeNode;
+
+      parentNode.add(treeNode);
+      _copyNode2(parentNode: treeNode, node: treeNode2);
+    }
+
+    // final TreeNode eee = TreeNode(key: '')..add(TreeNode());
+    // _copyNode2(parentNode: node, node: _treeSimpleOriginal);
+
+    // final List<TreeNode> treeNodeList = <TreeNode>[];
+    // for (final Node node in node.children.values) {
+    //   final List<TreeNode> childList = <TreeNode>[];
+    //   for (final String element in node.children.keys) {
+    //     childList.add(TreeNode(key: element));
+    //   }
+    //   treeNodeList.add(TreeNode(key: node.key)..addAll(childList));
+    // }
+
+    // for (final TreeNode element in treeNodeList) {
+    //   print('2 >> ${node.key}');
+    //   // _copyNode2(parentNode: node, node: element);
+    // }
   }
 
   String _makeString(int length) {
